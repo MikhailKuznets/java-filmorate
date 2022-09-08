@@ -28,17 +28,20 @@ public class UserController {
 
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
+        log.info("Получен POST - запрос к /users, переданное значение USER = {}", user);
         if (user.getName() == null) {
             user.setName(user.getLogin());
         }
         user.setId(currentUserId);
         users.put(currentUserId, user);
+        log.info("Пользователю: {}, Присвоен Id = {}", user.getName(), user.getId());
         increaseCurrentUserId();
         return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
+        log.info("Получен PUT - запрос к /users, переданное значение USER = {}", user);
         int id = user.getId();
         if (users.containsKey(id)) {
             users.put(user.getId(), user);

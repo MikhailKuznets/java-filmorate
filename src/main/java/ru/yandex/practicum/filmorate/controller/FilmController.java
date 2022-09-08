@@ -28,14 +28,17 @@ public class FilmController {
 
     @PostMapping
     public Film createFilm(@Valid @RequestBody Film film) {
+        log.info("Получен POST - запрос к /films, переданное значение FILM = {}", film);
         film.setId(currentFilmId);
         films.put(currentFilmId, film);
+        log.info("Фильму: {}, Присвоен Id = {}", film.getName(), film.getId());
         increaseCurrentFilmId();
         return film;
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
+        log.info("Получен PUT - запрос к /films, переданное значение FILM = {}", film);
         int id = film.getId();
         if (films.containsKey(id)) {
             films.put(film.getId(), film);
