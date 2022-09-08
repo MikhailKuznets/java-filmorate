@@ -2,10 +2,10 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.IdValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class FilmController {
             films.put(film.getId(), film);
             return film;
         } else {
-            throw new ValidationException("Фильм с Id: " + id + " отсутствует в базе");
+            throw new IdValidationException("Фильм с Id: " + id + " отсутствует в базе");
         }
 
     }
