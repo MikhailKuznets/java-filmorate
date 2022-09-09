@@ -29,7 +29,10 @@ public class UserController {
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         log.info("Получен POST - запрос к /users, переданное значение USER = {}", user);
-        if (user.getName().isEmpty()) {
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        }
+        if (user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         user.setId(currentUserId);
