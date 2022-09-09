@@ -37,7 +37,7 @@ public class FilmController {
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) throws IdValidationException {
         log.info("Получен PUT - запрос к /films, переданное значение FILM = {}", film);
         int id = film.getId();
         if (films.containsKey(id)) {
