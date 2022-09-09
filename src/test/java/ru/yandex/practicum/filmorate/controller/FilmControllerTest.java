@@ -99,6 +99,24 @@ class FilmControllerTest {
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
+    void shouldNotUpdateIfFilIfIncorrectId() throws Exception {
+        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
+        filmController.createFilm(film);
+
+        Film updatedFilm = new Film("Updated Film Name",
+                "Updated Film Description",
+                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
+                CORRECT_FILM_DURATION + 120);
+        updatedFilm.setId(999);
+        String body = objectMapper.writeValueAsString(updatedFilm);
+
+        this.mockMvc.perform(
+                        put("/films").content(body).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
     void shouldNotUpdateIfFilmNameIsEmpty() throws Exception {
         Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
         filmController.createFilm(film);

@@ -47,6 +47,7 @@ public class UserController {
             users.put(user.getId(), user);
             return user;
         } else {
+            log.warn("Пользователь с id = {} отсутствует в базе", user.getId());
             throw new IdValidationException("User с Id: " + id + " отсутствует в базе");
         }
     }

@@ -135,12 +135,35 @@ class UserControllerTest {
         updatedUser.setId(1);
         String body = objectMapper.writeValueAsString(updatedUser);
 
-        String correctPostResponse = objectMapper.writeValueAsString(updatedUser);
-
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json(correctPostResponse));
+                .andExpect(content().json(body));
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void shouldNotUpdateIfIncorrectId() throws Exception {
+        User user = User.builder()
+                .name(CORRECT_USER_NAME)
+                .email(CORRECT_USER_EMAIL)
+                .login(CORRECT_USER_LOGIN)
+                .birthday(CORRECT_USER_BIRTHDAY)
+                .build();
+        userController.createUser(user);
+
+        User updatedUser = User.builder()
+                .name("Updated User")
+                .email("updateduser@yandex.ru")
+                .login("UPDATED_USER")
+                .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
+                .build();
+        updatedUser.setId(999);
+        String body = objectMapper.writeValueAsString(updatedUser);
+
+        this.mockMvc.perform(
+                        put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)

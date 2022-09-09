@@ -44,6 +44,7 @@ public class FilmController {
             films.put(film.getId(), film);
             return film;
         } else {
+            log.warn("Фильм с id = {} отсутствует в базе", film.getId());
             throw new IdValidationException("Фильм с Id: " + id + " отсутствует в базе");
         }
 
