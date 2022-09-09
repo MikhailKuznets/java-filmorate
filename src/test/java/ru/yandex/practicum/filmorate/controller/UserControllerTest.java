@@ -163,7 +163,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
