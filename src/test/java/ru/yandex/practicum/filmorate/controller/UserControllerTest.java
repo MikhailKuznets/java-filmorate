@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -23,9 +24,9 @@ import java.util.List;
 @SpringBootTest
 @AutoConfigureMockMvc
 class UserControllerTest {
-    private final String CORRECT_USER_NAME = "User Name";
-    private final String CORRECT_USER_EMAIL = "practicum@yandex.ru";
-    private final String CORRECT_USER_LOGIN = "USER_LOGIN";
+    private static final String CORRECT_USER_NAME = "User Name";
+    private static final String CORRECT_USER_EMAIL = "practicum@yandex.ru";
+    private static final String CORRECT_USER_LOGIN = "USER_LOGIN";
     private final static LocalDate CORRECT_USER_BIRTHDAY = LocalDate.now();
 
     @Autowired
@@ -37,19 +38,32 @@ class UserControllerTest {
     @SpyBean
     private UserController userController;
 
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    @Test
-    void shouldCreateCorrectUser() throws Exception {
-        User user = User.builder()
+    private User correctUser;
+    private User correctUpdatedUser;
+
+    @BeforeEach
+    void setUp() {
+        correctUser = User.builder()
                 .name(CORRECT_USER_NAME)
                 .email(CORRECT_USER_EMAIL)
                 .login(CORRECT_USER_LOGIN)
                 .birthday(CORRECT_USER_BIRTHDAY)
                 .build();
-        String body = objectMapper.writeValueAsString(user);
 
-        user.setId(1);
-        String correctPostResponse = objectMapper.writeValueAsString(user);
+        correctUpdatedUser = User.builder()
+                .name("Updated User")
+                .email("updateduser@yandex.ru")
+                .login("UPDATED_USER")
+                .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
+                .build();
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void shouldCreateCorrectUser() throws Exception {
+        String body = objectMapper.writeValueAsString(correctUser);
+        correctUser.setId(1);
+        String correctPostResponse = objectMapper.writeValueAsString(correctUser);
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -61,17 +75,12 @@ class UserControllerTest {
     @Test
     void shouldCreateCorrectUserWithEmptyName() throws Exception {
         String emptyName = "";
-        User user = User.builder()
-                .name(emptyName)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        String body = objectMapper.writeValueAsString(user);
+        correctUser.setName(emptyName);
+        String body = objectMapper.writeValueAsString(correctUser);
 
-        user.setId(1);
-        user.setName(CORRECT_USER_LOGIN);
-        String correctPostResponse = objectMapper.writeValueAsString(user);
+        correctUser.setId(1);
+        correctUser.setName(CORRECT_USER_LOGIN);
+        String correctPostResponse = objectMapper.writeValueAsString(correctUser);
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -118,22 +127,10 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldUpdateCorrectUser() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
-        User updatedUser = User.builder()
-                .name("Updated User")
-                .email("updateduser@yandex.ru")
-                .login("UPDATED_USER")
-                .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .build();
-        updatedUser.setId(1);
-        String body = objectMapper.writeValueAsString(updatedUser);
+        correctUpdatedUser.setId(1);
+        String body = objectMapper.writeValueAsString(correctUpdatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -144,22 +141,10 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfIncorrectId() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
-        User updatedUser = User.builder()
-                .name("Updated User")
-                .email("updateduser@yandex.ru")
-                .login("UPDATED_USER")
-                .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .build();
-        updatedUser.setId(999);
-        String body = objectMapper.writeValueAsString(updatedUser);
+        correctUpdatedUser.setId(999);
+        String body = objectMapper.writeValueAsString(correctUpdatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -253,13 +238,7 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfEmailIsWrong() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
         String wrongEmail = "userwithoutdogs.ru";
         User updatedUser = User.builder()
@@ -279,13 +258,7 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfEmailIsEmpty() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
         String emptyEmail = "";
         User updatedUser = User.builder()
@@ -305,14 +278,7 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFutureBirthday() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
-
+        userController.createUser(correctUser);
 
         User updatedUser = User.builder()
                 .name("Updated User")
@@ -331,13 +297,7 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfLoginIsEmpty() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
         String emptyLogin = "";
         User updatedUser = User.builder()
@@ -357,13 +317,7 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfLoginHaveBlank() throws Exception {
-        User user = User.builder()
-                .name(CORRECT_USER_NAME)
-                .email(CORRECT_USER_EMAIL)
-                .login(CORRECT_USER_LOGIN)
-                .birthday(CORRECT_USER_BIRTHDAY)
-                .build();
-        userController.createUser(user);
+        userController.createUser(correctUser);
 
         String incorrectLogin = "INCORRECT LOGIN";
         User updatedUser = User.builder()

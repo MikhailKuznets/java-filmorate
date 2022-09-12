@@ -29,10 +29,7 @@ public class UserController {
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         log.info("Получен POST - запрос к /users, переданное значение USER = {}", user);
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        if (user.getName().isBlank()) {
+        if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
         user.setId(currentUserId);
@@ -50,7 +47,6 @@ public class UserController {
             users.put(user.getId(), user);
             return user;
         } else {
-            log.warn("Пользователь с id = {} отсутствует в базе", user.getId());
             throw new IdValidationException("User с Id: " + id + " отсутствует в базе");
         }
     }

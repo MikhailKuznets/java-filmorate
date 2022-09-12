@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.bytebuddy.utility.RandomString;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -39,14 +40,25 @@ class FilmControllerTest {
     @SpyBean
     private FilmController filmController;
 
+    private Film correctFilm;
+
+    @BeforeEach
+    void setUp() {
+        correctFilm = Film.builder()
+                .name(CORRECT_FILM_NAME)
+                .description(CORRECT_FILM_DESCRIPTION)
+                .releaseDate(TEST_DATE)
+                .duration(CORRECT_FILM_DURATION)
+                .build();
+    }
+
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldCreateCorrectFilm() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        String body = objectMapper.writeValueAsString(film);
+        String body = objectMapper.writeValueAsString(correctFilm);
 
-        film.setId(1);
-        String correctPostResponse = objectMapper.writeValueAsString(film);
+        correctFilm.setId(1);
+        String correctPostResponse = objectMapper.writeValueAsString(correctFilm);
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
@@ -57,14 +69,26 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldGetFilms() throws Exception {
-        Film film1 = new Film("Film 1 Name",
-                "Film 1 Description", TEST_DATE.plusYears(50), CORRECT_FILM_DURATION + 60);
+        Film film1 = Film.builder()
+                .name("Film 1 Name")
+                .description("Film 1 Description")
+                .releaseDate(TEST_DATE.plusYears(50))
+                .duration(CORRECT_FILM_DURATION + 60)
+                .build();
 
-        Film film2 = new Film("Film 2 Name",
-                "Film 2 Description", TEST_DATE.plusYears(100), CORRECT_FILM_DURATION + 120);
+        Film film2 = Film.builder()
+                .name("Film 2 Name")
+                .description("Film 2 Description")
+                .releaseDate(TEST_DATE.plusYears(100))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
 
-        Film film3 = new Film("Film 3 Name",
-                "Film 3 Description", LocalDate.now(), CORRECT_FILM_DURATION + 240);
+        Film film3 = Film.builder()
+                .name("Film 3 Name")
+                .description("Film 3 Description")
+                .releaseDate(TEST_DATE.plusYears(110))
+                .duration(CORRECT_FILM_DURATION + 240)
+                .build();
 
         filmController.createFilm(film1);
         filmController.createFilm(film2);
@@ -81,14 +105,16 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldUpdateCorrectFilm() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
-        Film updatedFilm = new Film("Updated Film Name",
-                "Updated Film Description",
-                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
-                CORRECT_FILM_DURATION + 120);
-        updatedFilm.setId(1);
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name("Updated Film Name")
+                .description("Updated Film Description")
+                .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -100,14 +126,16 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilIfIncorrectId() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
-        Film updatedFilm = new Film("Updated Film Name",
-                "Updated Film Description",
-                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
-                CORRECT_FILM_DURATION + 120);
-        updatedFilm.setId(999);
+        Film updatedFilm = Film.builder()
+                .id(999)
+                .name("Updated Film Name")
+                .description("Updated Film Description")
+                .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -118,14 +146,18 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmNameIsEmpty() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
         String emptyName = "";
-        Film updatedFilm = new Film(emptyName,
-                "Updated Film Description",
-                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
-                CORRECT_FILM_DURATION + 60);
+
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name(emptyName)
+                .description("Updated Film Description")
+                .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -136,14 +168,18 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmDescriptionIsLong() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
         String incorrectDescription = RandomString.make(201);
-        Film updatedFilm = new Film("Updated Film Name",
-                incorrectDescription,
-                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
-                CORRECT_FILM_DURATION + 60);
+
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name("Updated Film Name")
+                .description(incorrectDescription)
+                .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -154,13 +190,16 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmReleaseIsEarly() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
-        Film updatedFilm = new Film("Updated Film Name",
-                "Updated Film Description",
-                TEST_DATE.minusDays(1),
-                CORRECT_FILM_DURATION + 60);
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name("Updated Film Name")
+                .description("Updated Film Description")
+                .releaseDate(TEST_DATE.minusDays(1))
+                .duration(CORRECT_FILM_DURATION + 120)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -171,13 +210,16 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmDurationIs0() throws Exception {
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
-        filmController.createFilm(film);
+        filmController.createFilm(correctFilm);
 
-        Film updatedFilm = new Film("Updated Film Name",
-                "Updated Film Description",
-                TEST_DATE.plusYears(100).plusMonths(5).plusDays(7),
-                0);
+        Film updatedFilm = Film.builder()
+                .id(1)
+                .name("Updated Film Name")
+                .description("Updated Film Description")
+                .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
+                .duration(0)
+                .build();
+
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -190,7 +232,13 @@ class FilmControllerTest {
     void shouldNotCreateCorrectFilmIfDurationIs0() throws Exception {
         int filmDuration = 0;
 
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, TEST_DATE, filmDuration);
+        Film film = Film.builder()
+                .name(CORRECT_FILM_NAME)
+                .description(CORRECT_FILM_DESCRIPTION)
+                .releaseDate(TEST_DATE)
+                .duration(filmDuration)
+                .build();
+
         String body = objectMapper.writeValueAsString(film);
 
         this.mockMvc.perform(
@@ -203,7 +251,13 @@ class FilmControllerTest {
     void shouldNotCreateCorrectFilmIfEarlyReleaseDate() throws Exception {
         LocalDate testReleaseDate = TEST_DATE.minusDays(1);
 
-        Film film = new Film(CORRECT_FILM_NAME, CORRECT_FILM_DESCRIPTION, testReleaseDate, CORRECT_FILM_DURATION);
+        Film film = Film.builder()
+                .name(CORRECT_FILM_NAME)
+                .description(CORRECT_FILM_DESCRIPTION)
+                .releaseDate(testReleaseDate)
+                .duration(CORRECT_FILM_DURATION)
+                .build();
+
         String body = objectMapper.writeValueAsString(film);
 
         this.mockMvc.perform(
@@ -216,7 +270,13 @@ class FilmControllerTest {
     void shouldNotCreateCorrectFilmIfNameIsEmpty() throws Exception {
         String filmName = "";
 
-        Film film = new Film(filmName, CORRECT_FILM_DESCRIPTION, TEST_DATE, CORRECT_FILM_DURATION);
+        Film film = Film.builder()
+                .name(filmName)
+                .description(CORRECT_FILM_DESCRIPTION)
+                .releaseDate(TEST_DATE)
+                .duration(CORRECT_FILM_DURATION)
+                .build();
+
         String body = objectMapper.writeValueAsString(film);
 
         this.mockMvc.perform(
@@ -229,7 +289,13 @@ class FilmControllerTest {
     void shouldNotCreateCorrectFilmIfDescriptionIsLong() throws Exception {
         String filmDescription = RandomString.make(201);
 
-        Film film = new Film(CORRECT_FILM_NAME, filmDescription, TEST_DATE, CORRECT_FILM_DURATION);
+        Film film = Film.builder()
+                .name(CORRECT_FILM_NAME)
+                .description(filmDescription)
+                .releaseDate(TEST_DATE)
+                .duration(CORRECT_FILM_DURATION)
+                .build();
+
         String body = objectMapper.writeValueAsString(film);
 
         this.mockMvc.perform(

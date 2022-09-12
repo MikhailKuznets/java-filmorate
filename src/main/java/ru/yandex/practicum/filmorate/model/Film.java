@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.ReleaseDate;
 
@@ -10,6 +11,7 @@ import javax.validation.constraints.Size;
 import java.time.LocalDate;
 
 @Data
+@Builder
 public class Film {
     @Digits(integer = 12, fraction = 0)
     private int id;

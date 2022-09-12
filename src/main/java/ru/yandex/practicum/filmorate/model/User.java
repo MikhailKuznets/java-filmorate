@@ -5,10 +5,7 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.validator.CorrectLogin;
 
 
-import javax.validation.constraints.Digits;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
 
 @Data
