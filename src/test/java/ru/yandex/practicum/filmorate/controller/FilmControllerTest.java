@@ -90,9 +90,9 @@ class FilmControllerTest {
                 .duration(CORRECT_FILM_DURATION + 240)
                 .build();
 
-        filmController.createFilm(film1);
-        filmController.createFilm(film2);
-        filmController.createFilm(film3);
+        filmController.create(film1);
+        filmController.create(film2);
+        filmController.create(film3);
 
         String correctPostResponse = objectMapper.writeValueAsString(List.of(film1, film2, film3));
 
@@ -105,7 +105,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldUpdateCorrectFilm() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
                 .id(1)
@@ -126,7 +126,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilIfIncorrectId() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
                 .id(999)
@@ -146,7 +146,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmNameIsEmpty() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         String emptyName = "";
 
@@ -168,7 +168,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmDescriptionIsLong() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         String incorrectDescription = RandomString.make(201);
 
@@ -190,7 +190,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmReleaseIsEarly() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
                 .id(1)
@@ -210,7 +210,7 @@ class FilmControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFilmDurationIs0() throws Exception {
-        filmController.createFilm(correctFilm);
+        filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
                 .id(1)
