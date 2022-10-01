@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -19,10 +20,11 @@ public class FilmService extends AbstractService<Film> {
 
     public static final Comparator<Film> FILM_COMPARATOR = Comparator.comparingLong(Film::getRate).reversed();
 
-    Storage<User> userStorage;
+//    private Storage<User> userStorage;
+    private InMemoryUserStorage userStorage;
 
     @Autowired
-    public FilmService(Storage<Film> storage, Storage<User> userStorage) {
+    public FilmService(Storage<Film> storage, InMemoryUserStorage userStorage) {
         this.storage = storage;
         this.userStorage = userStorage;
     }
@@ -43,19 +45,19 @@ public class FilmService extends AbstractService<Film> {
         }
     }
 
-    public void addLike(Long id, Long userId) {
+    public void addLike(long id, long userId) {
         final Film film = storage.get(id);
         userStorage.get(userId);
         film.addLike(userId);
     }
 
-    public void removeLike(Long id, Long userId) {
+    public void removeLike(long id, long userId) {
         final Film film = storage.get(id);
         userStorage.get(userId);
         film.removeLike(userId);
     }
 
-    public List<Film> getPopular(int count) {
+    public List<Film> getPopular(long count) {
         return storage.getAll().stream()
                 .sorted(FILM_COMPARATOR)
                 .limit(count)

@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -14,7 +13,6 @@ import java.util.List;
 @RestController
 @Slf4j
 public class FilmController {
-    //    private final FilmStorage filmStorage;
     private final FilmService service;
 
     @Autowired
@@ -22,7 +20,7 @@ public class FilmController {
         this.service = service;
     }
 
-    @PostMapping
+    @PostMapping("/films")
     public Film create(@Valid @RequestBody final Film film) {
         log.info("Получен POST - запрос к /films, переданное значение FILM = {}", film);
         Film createdFilm = service.create(film);
@@ -30,8 +28,8 @@ public class FilmController {
         return createdFilm;
     }
 
-    @PutMapping
-    public Film update(@Valid @RequestBody Film film) {
+    @PutMapping("/films")
+    public Film update(@Valid @RequestBody final Film film) {
         log.info("Получен PUT - запрос к /films, переданное значение FILM = {}", film);
         return service.update(film);
     }

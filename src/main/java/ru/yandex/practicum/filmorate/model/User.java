@@ -1,8 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 import ru.yandex.practicum.filmorate.validator.CorrectLogin;
 
 
@@ -11,9 +10,14 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-@Data
-@Builder
-public class User extends StorageData{
+//@Data
+//@Builder
+@Getter
+@Setter
+@ToString(callSuper = true)
+@NoArgsConstructor
+@AllArgsConstructor
+public class User extends StorageData {
     private String name;
 
 //    @Digits(integer = 12, fraction = 0)
@@ -21,14 +25,23 @@ public class User extends StorageData{
 
     @Email(message = "Некорректный Email")
     @NotBlank(message = "Некорректный Email")
-    private final String email;
+    private String email;
 
     @CorrectLogin(message = "Логин не может быть пустым и содержать пробелы")
-    private final String login;
+    private String login;
 
     @PastOrPresent(message = "День Рождения не может быть в будущем")
-    private final LocalDate birthday;
+    private LocalDate birthday;
 
     @JsonIgnore
     private transient Set<Long> friendIds = new HashSet<>();
+
+    public void addFriend(long friendId) {
+        friendIds.add(friendId);
+    }
+
+    public void removeFriend(long friendId) {
+        friendIds.remove(friendId);
+    }
+
 }
