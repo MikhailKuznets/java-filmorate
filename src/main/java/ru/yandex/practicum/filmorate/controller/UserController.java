@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -48,12 +47,28 @@ public class UserController {
         return service.get(id);
     }
 
-    @PutMapping("/films/{id}/friends/{friendId}")
-    public void addLike(@PathVariable Long id, @PathVariable Long friendId) {
-        log.info("Add like film id: {} from user: {}", id, friendId);
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        log.info("To user: {} add friend: {}", id, friendId);
         service.addFriend(id, friendId);
     }
 
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        log.info("To user: {} delete friend: {}", id, friendId);
+        service.removeFriend(id, friendId);
+    }
 
+    @GetMapping("/users/{id}/friends")
+    public List<User> getFriends(@PathVariable Long id) {
+        log.info("Get friends from user: {}", id);
+        return service.getFriends(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public List<User> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        log.info("Get common friends from users: {} and {}", id, otherId);
+        return service.getCommonFriends(id, otherId);
+    }
 
 }

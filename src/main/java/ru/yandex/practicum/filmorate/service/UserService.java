@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Storage;
 
@@ -51,6 +50,22 @@ public class UserService extends AbstractService<User> {
         final User friend = storage.get(friendId);
         user.removeFriend(friendId);
         friend.removeFriend(userId);
+    }
+
+    public List<User> getFriends(Long userId) {
+        final User user = storage.get(userId);
+        return user.getFriendsIds().stream()
+                .map(storage::get)
+                .collect(Collectors.toList());
+    }
+
+    public List<User> getCommonFriends(Long id, Long otherId) {
+        final User user = storage.get(id);
+        final User otherUser = storage.get(otherId);
+        return user.getFriendsIds().stream()
+                .filter(otherUser.getFriendsIds()::contains)
+                .map(storage::get)
+                .collect(Collectors.toList());
     }
 
 }

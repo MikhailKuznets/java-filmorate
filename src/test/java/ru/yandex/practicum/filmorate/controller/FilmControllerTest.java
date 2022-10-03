@@ -57,7 +57,7 @@ class FilmControllerTest {
     void shouldCreateCorrectFilm() throws Exception {
         String body = objectMapper.writeValueAsString(correctFilm);
 
-        correctFilm.setId(1);
+        correctFilm.setId(1L);
         String correctPostResponse = objectMapper.writeValueAsString(correctFilm);
 
         this.mockMvc.perform(
@@ -108,12 +108,12 @@ class FilmControllerTest {
         filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
-                .id(1)
                 .name("Updated Film Name")
                 .description("Updated Film Description")
                 .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
                 .duration(CORRECT_FILM_DURATION + 120)
                 .build();
+        updatedFilm.setId(1L);
 
         String body = objectMapper.writeValueAsString(updatedFilm);
 
@@ -129,13 +129,13 @@ class FilmControllerTest {
         filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
-                .id(999)
                 .name("Updated Film Name")
                 .description("Updated Film Description")
                 .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
                 .duration(CORRECT_FILM_DURATION + 120)
                 .build();
 
+        updatedFilm.setId(999L);
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
@@ -151,18 +151,17 @@ class FilmControllerTest {
         String emptyName = "";
 
         Film updatedFilm = Film.builder()
-                .id(1)
                 .name(emptyName)
                 .description("Updated Film Description")
                 .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
                 .duration(CORRECT_FILM_DURATION + 120)
                 .build();
-
+        updatedFilm.setId(1L);
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -173,18 +172,17 @@ class FilmControllerTest {
         String incorrectDescription = RandomString.make(201);
 
         Film updatedFilm = Film.builder()
-                .id(1)
                 .name("Updated Film Name")
                 .description(incorrectDescription)
                 .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
                 .duration(CORRECT_FILM_DURATION + 120)
                 .build();
-
+        updatedFilm.setId(1L);
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -193,18 +191,17 @@ class FilmControllerTest {
         filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
-                .id(1)
                 .name("Updated Film Name")
                 .description("Updated Film Description")
                 .releaseDate(TEST_DATE.minusDays(1))
                 .duration(CORRECT_FILM_DURATION + 120)
                 .build();
-
+        updatedFilm.setId(1L);
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -213,18 +210,18 @@ class FilmControllerTest {
         filmController.create(correctFilm);
 
         Film updatedFilm = Film.builder()
-                .id(1)
                 .name("Updated Film Name")
                 .description("Updated Film Description")
                 .releaseDate(TEST_DATE.plusYears(100).plusMonths(5).plusDays(7))
                 .duration(0)
                 .build();
+        updatedFilm.setId(1L);
 
         String body = objectMapper.writeValueAsString(updatedFilm);
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -243,7 +240,7 @@ class FilmControllerTest {
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -262,7 +259,7 @@ class FilmControllerTest {
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -281,7 +278,7 @@ class FilmControllerTest {
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -300,7 +297,7 @@ class FilmControllerTest {
 
         this.mockMvc.perform(
                         post("/films").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
 }

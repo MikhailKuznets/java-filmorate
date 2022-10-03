@@ -20,8 +20,7 @@ public class FilmService extends AbstractService<Film> {
 
     public static final Comparator<Film> FILM_COMPARATOR = Comparator.comparingLong(Film::getRate).reversed();
 
-//    private Storage<User> userStorage;
-    private InMemoryUserStorage userStorage;
+    private Storage<User> userStorage;
 
     @Autowired
     public FilmService(Storage<Film> storage, InMemoryUserStorage userStorage) {
