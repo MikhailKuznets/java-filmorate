@@ -20,7 +20,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,7 +48,6 @@ class UserControllerTest {
                 .email(CORRECT_USER_EMAIL)
                 .login(CORRECT_USER_LOGIN)
                 .birthday(CORRECT_USER_BIRTHDAY)
-                .friendIds(Set.of())
                 .build();
 
         correctUpdatedUser = User.builder()
@@ -57,7 +55,6 @@ class UserControllerTest {
                 .email("updateduser@yandex.ru")
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .friendIds(Set.of())
                 .build();
     }
 
@@ -99,7 +96,6 @@ class UserControllerTest {
                 .email("user1@yandex.ru")
                 .login("USER_1_LOGIN")
                 .birthday(LocalDate.of(1980, 1, 1))
-                .friendIds(Set.of())
                 .build();
 
         User user2 = User.builder()
@@ -107,7 +103,6 @@ class UserControllerTest {
                 .email("user2@yandex.ru")
                 .login("USER_2_LOGIN")
                 .birthday(LocalDate.of(1990, 6, 15))
-                .friendIds(Set.of())
                 .build();
 
         User user3 = User.builder()
@@ -115,7 +110,6 @@ class UserControllerTest {
                 .email("user3@yandex.ru")
                 .login("USER_3_LOGIN")
                 .birthday(LocalDate.of(2000, 12, 31))
-                .friendIds(Set.of())
                 .build();
 
         userController.create(user1);
@@ -166,7 +160,6 @@ class UserControllerTest {
                 .email(CORRECT_USER_EMAIL)
                 .login(emptyLogin)
                 .birthday(CORRECT_USER_BIRTHDAY)
-                .friendIds(Set.of())
                 .build();
         String body = objectMapper.writeValueAsString(user);
 
@@ -184,7 +177,6 @@ class UserControllerTest {
                 .email(CORRECT_USER_EMAIL)
                 .login(incorrectLogin)
                 .birthday(CORRECT_USER_BIRTHDAY)
-                .friendIds(Set.of())
                 .build();
         String body = objectMapper.writeValueAsString(user);
 
@@ -201,7 +193,6 @@ class UserControllerTest {
                 .email(CORRECT_USER_EMAIL)
                 .login(CORRECT_USER_LOGIN)
                 .birthday(LocalDate.now().plusDays(1))
-                .friendIds(Set.of())
                 .build();
         String body = objectMapper.writeValueAsString(user);
 
@@ -219,7 +210,6 @@ class UserControllerTest {
                 .email(emptyEmail)
                 .login(CORRECT_USER_LOGIN)
                 .birthday(LocalDate.now().plusDays(1))
-                .friendIds(Set.of())
                 .build();
         String body = objectMapper.writeValueAsString(user);
 
@@ -237,7 +227,6 @@ class UserControllerTest {
                 .email(wrongEmail)
                 .login(CORRECT_USER_LOGIN)
                 .birthday(LocalDate.now().plusDays(1))
-                .friendIds(Set.of())
                 .build();
         String body = objectMapper.writeValueAsString(user);
 
@@ -257,7 +246,6 @@ class UserControllerTest {
                 .email(wrongEmail)
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .friendIds(Set.of())
                 .build();
         updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
@@ -278,7 +266,6 @@ class UserControllerTest {
                 .email(emptyEmail)
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .friendIds(Set.of())
                 .build();
         updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
@@ -298,7 +285,6 @@ class UserControllerTest {
                 .email("updateduser@yandex.ru")
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.plusDays(1))
-                .friendIds(Set.of())
                 .build();
         updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
@@ -319,7 +305,6 @@ class UserControllerTest {
                 .email("updateduser@yandex.ru")
                 .login(emptyLogin)
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .friendIds(Set.of())
                 .build();
         updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
@@ -340,7 +325,6 @@ class UserControllerTest {
                 .email("updateduser@yandex.ru")
                 .login(incorrectLogin)
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
-                .friendIds(Set.of())
                 .build();
         updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);

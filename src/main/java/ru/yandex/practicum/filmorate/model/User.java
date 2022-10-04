@@ -9,28 +9,23 @@ import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.*;
 
-//@Data
 @Builder
-@Getter
-@Setter
-@ToString(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class User extends StorageData {
     private String name;
 
     @Email(message = "Некорректный Email")
     @NotBlank(message = "Некорректный Email")
-    private String email;
+    private final String email;
 
     @CorrectLogin(message = "Логин не может быть пустым и содержать пробелы")
-    private String login;
+    private final String login;
 
     @PastOrPresent(message = "День Рождения не может быть в будущем")
-    private LocalDate birthday;
+    private final LocalDate birthday;
 
     @JsonIgnore
-    private transient Set<Long> friendIds = new HashSet<>();
+    private final Set<Long> friendIds = new HashSet<>();
 
     public void addFriend(long friendId) {
         friendIds.add(friendId);

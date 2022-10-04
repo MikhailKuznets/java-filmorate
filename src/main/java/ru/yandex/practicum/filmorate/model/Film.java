@@ -12,31 +12,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Builder
-@Getter
-@Setter
-@ToString(callSuper = true)
-@NoArgsConstructor
-@AllArgsConstructor
-
-
+@Data
 public class Film extends StorageData {
 
     @NotBlank(message = "Необходимо указать название")
-    private String name;
+    private final String name;
 
     @Size(max = 200, message = "Максимальная длина описания - 200 символов")
-    private String description;
+    private final String description;
 
     @ReleaseDate(message = "Некорректная дата релиза")
-    private LocalDate releaseDate;
+    private final LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительной")
-    private int duration;
+    private final int duration;
 
     private Long rate = 0L;
 
     @JsonIgnore
-    private Set<Long> userIds = new HashSet<>();
+    private final Set<Long> userIds = new HashSet<>();
 
     public void addLike(Long userId) {
         userIds.add(userId);
