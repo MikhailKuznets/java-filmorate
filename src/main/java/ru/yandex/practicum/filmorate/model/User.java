@@ -1,20 +1,18 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import ru.yandex.practicum.filmorate.validator.CorrectLogin;
 
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.*;
 
-@Data
 @Builder
-public class User {
+@Data
+public class User extends StorageData {
     private String name;
-
-    @Digits(integer = 12, fraction = 0)
-    private int id;
 
     @Email(message = "Некорректный Email")
     @NotBlank(message = "Некорректный Email")
@@ -25,4 +23,20 @@ public class User {
 
     @PastOrPresent(message = "День Рождения не может быть в будущем")
     private final LocalDate birthday;
+
+    @JsonIgnore
+    private final Set<Long> friendIds = new HashSet<>();
+
+    public void addFriend(long friendId) {
+        friendIds.add(friendId);
+    }
+
+    public void removeFriend(long friendId) {
+        friendIds.remove(friendId);
+    }
+
+    public List<Long> getFriendsIds() {
+        return new ArrayList<>(friendIds);
+    }
+
 }

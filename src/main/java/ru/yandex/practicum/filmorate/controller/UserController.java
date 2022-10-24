@@ -1,54 +1,67 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.IdValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @RestController
-@RequestMapping("/users")
 @Slf4j
+@RequiredArgsConstructor
 public class UserController {
-    private int currentUserId = 1;
-    private final Map<Integer, User> users = new HashMap<>();
+    private final UserService service;
 
-    private void increaseCurrentUserId() {
-        this.currentUserId++;
-    }
-
-    @GetMapping
-    public Collection<User> getAllUsers() {
-        return users.values();
-    }
-
-    @PostMapping
-    public User createUser(@Valid @RequestBody User user) {
+    @PostMapping("/users")
+    public User create(@Valid @RequestBody final User user) {
         log.info("Получен POST - запрос к /users, переданное значение USER = {}", user);
-        if (user.getName() == null || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        user.setId(currentUserId);
-        users.put(currentUserId, user);
-        log.info("Пользователю: {}, Присвоен Id = {}", user.getName(), user.getId());
-        increaseCurrentUserId();
-        return user;
+        return service.create(user);
     }
 
-    @PutMapping
-    public User updateUser(@Valid @RequestBody User user) {
+    @PutMapping("/users")
+    public User update(@Valid @RequestBody final User user) {
         log.info("Получен PUT - запрос к /users, переданное значение USER = {}", user);
-        int id = user.getId();
-        if (users.containsKey(id)) {
-            users.put(user.getId(), user);
-            return user;
-        } else {
-            throw new IdValidationException("User с Id: " + id + " отсутствует в базе");
-        }
+        return service.update(user);
+    }
+
+    @GetMapping("/users")
+    public Collection<User> getAll() {
+        log.info("Получен Get - запрос к /users");
+        return service.getAll();
+    }
+
+    @GetMapping("/users/{id}")
+    public User get(@PathVariable Long id) {
+        log.info("Получен Get - запрос к /users/id , id = {}", id);
+        return service.get(id);
+    }
+
+    @PutMapping("/users/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        log.info("Получен Put - запрос к /users/{id}/friends/{friendId} , id = {}, friendId = {}", id, friendId);
+        service.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/users/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable Long id, @PathVariable Long friendId) {
+        log.info("Получен Delete - запрос к /users/{id}/friends/{friendId} , id = {}, friendId = {}", id, friendId);
+        service.removeFriend(id, friendId);
+    }
+
+    @GetMapping("/users/{id}/friends")
+    public List<User> getFriends(@PathVariable Long id) {
+        log.info("Получен Get - запрос к /users/{id}/friends , id = {}", id);
+        return service.getFriends(id);
+    }
+
+    @GetMapping("/users/{id}/friends/common/{otherId}")
+    public List<User> getFriends(@PathVariable Long id, @PathVariable Long otherId) {
+        log.info("Получен Get - запрос к /users/{id}/friends/common/{otherId} , id = {}, otherId = {}", id, otherId);
+        return service.getCommonFriends(id, otherId);
     }
 
 }
