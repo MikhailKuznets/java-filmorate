@@ -7,5 +7,5 @@ import javax.validation.constraints.Digits;
 @Data
 public abstract class StorageData {
     @Digits(integer = 12, fraction = 0)
-    private Long id;
+    protected Long id;
 }
