@@ -35,7 +35,7 @@ public class GenreDbStorage implements GenreDao {
     @Override
     public Optional<Genre> findById(Integer id) {
         String sql = "SELECT * FROM genres WHERE genre_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
+        //return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs));
         return jdbcTemplate.query(sql, (rs, rowNum) -> makeGenre(rs), id).stream().findFirst();
 
 
