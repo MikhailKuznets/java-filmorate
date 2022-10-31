@@ -2,14 +2,13 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-public class Genre extends StorageData {
+@NoArgsConstructor
+public class Genre {
+    int id;
     private String name;
 
-    public Genre(Integer id, String name) {
-        this.id = (long) id.intValue();
-        this.name = name;
-    }
 }

@@ -1,8 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class Mpa extends StorageData {
+@AllArgsConstructor
+@NoArgsConstructor
+public class Mpa{
+    private long id;
     private String name;
 }

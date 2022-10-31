@@ -11,50 +11,51 @@ import java.util.Collection;
 import java.util.List;
 
 @RestController
+@RequestMapping("/films")
 @Slf4j
 @RequiredArgsConstructor
 public class FilmController {
-    private final FilmService service;
+    private final FilmService filmService;
 
-    @PostMapping("/films")
+    @PostMapping
     public Film create(@Valid @RequestBody final Film film) {
         log.info("Получен POST - запрос к /films, переданное значение FILM = {}", film);
-        return service.create(film);
+        return filmService.create(film);
     }
 
-    @PutMapping("/films")
+    @PutMapping
     public Film update(@Valid @RequestBody final Film film) {
         log.info("Получен PUT - запрос к /films, переданное значение FILM = {}", film);
-        return service.update(film);
+        return filmService.update(film);
     }
 
-    @GetMapping("/films")
+    @GetMapping
     public Collection<Film> getAll() {
         log.info("Получен Get - запрос к /films");
-        return service.getAll();
+        return filmService.getAll();
     }
 
-    @GetMapping("/films/{id}")
+    @GetMapping("/{id}")
     public Film get(@PathVariable Long id) {
         log.info("Получен Get - запрос к /films/{id}, id = {}", id);
-        return service.get(id);
+        return filmService.get(id);
     }
 
-    @PutMapping("/films/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public void addLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Получен Put - запрос к /films/{id}/like/{userId}, id = {}, userId = {}", id, userId);
-        service.addLike(id, userId);
+        filmService.addLike(id, userId);
     }
 
-    @DeleteMapping("/films/{id}/like/{userId}")
+    @DeleteMapping("/{id}/like/{userId}")
     public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
         log.info("Получен Delete - запрос к /films/{id}/like/{userId}, id = {}, userId = {}", id, userId);
-        service.removeLike(id, userId);
+        filmService.removeLike(id, userId);
     }
 
-    @GetMapping("/films/popular")
+    @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
         log.info("Получен Get - запрос к /films/popular , count = {}", count);
-        return service.getPopular(count);
+        return filmService.getPopular(count);
     }
 }

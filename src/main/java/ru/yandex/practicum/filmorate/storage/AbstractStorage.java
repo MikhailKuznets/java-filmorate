@@ -18,16 +18,16 @@ public class AbstractStorage<T extends StorageData> implements Storage<T> {
         }
     }
 
-    @Override
-    public void create(T data) {
+
+    public T create(T data) {
         validate(data);
         if (storage.containsKey(data.getId())) {
             throw new DataAlreadyExistException("Duplicate id: " + data.getId());
         }
         storage.put(data.getId(), data);
+        return null;
     }
 
-    @Override
     public void update(T data) {
         validate(data);
         if (!storage.containsKey(data.getId())) {
