@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
-//@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,7 +34,7 @@ public class Film extends StorageData {
     private Long rate = 0L;
 
     @NotNull
-    Mpa mpa;
+    private Mpa mpa;
 
     @JsonIgnore
     private final Set<User> userIds = new HashSet<>();

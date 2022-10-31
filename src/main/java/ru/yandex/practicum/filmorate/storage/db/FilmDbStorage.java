@@ -59,8 +59,7 @@ public class FilmDbStorage implements FilmStorage {
         final ArrayList<Genre> genreList = new ArrayList<>(genres);
         genreList.sort(Comparator.comparing(Genre::getId));
 
-        //***
-        film.getGenres().clear();
+                film.getGenres().clear();
         for (Genre genre : genreList) {
             film.addGenre(genre);
         }

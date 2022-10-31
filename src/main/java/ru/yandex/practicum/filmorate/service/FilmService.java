@@ -27,6 +27,7 @@ public class FilmService {
 
     @Qualifier("FilmDbStorage")
     private final FilmStorage filmStorage;
+    @Qualifier("UserDbStorage")
     private final UserStorage userStorage;
     private final LikesStorage likesStorage;
     private final GenreStorage genreStorage;

@@ -70,13 +70,13 @@ public class UserService {
         List<User> result = new ArrayList<>(userStorage.getCommonFriends(id, otherId));
         if(result.get(0).getId() == id || result.get(1).getId() == id) {
             if (result.get(1).getId() == otherId || result.get(0).getId() == otherId) {
-                log.debug("Listing common friends for users with ids {} and {}", id, otherId);
+                log.debug("Список общих друзей пользователей id = {} и id = {}", id, otherId);
                 return result.stream().skip(2).collect(Collectors.toList());
             } else {
-                throw new DataNotFoundException("No user with such ID: " + otherId);
+                throw new DataNotFoundException("Отсутствует пользователь с id = " + otherId);
             }
         } else {
-            throw new DataNotFoundException("No user with such ID: " + id);
+            throw new DataNotFoundException("Отсутствует пользователь с id = " + id);
         }
     }
 
