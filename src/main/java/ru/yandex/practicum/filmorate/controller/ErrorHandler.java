@@ -2,53 +2,68 @@ package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.DataAlreadyExistException;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
-import ru.yandex.practicum.filmorate.exception.IdValidationException;
+import ru.yandex.practicum.filmorate.exceptions.InvalidIdException;
+import ru.yandex.practicum.filmorate.exceptions.filmExceptions.*;
+import ru.yandex.practicum.filmorate.exceptions.reviewExceptions.*;
+import ru.yandex.practicum.filmorate.exceptions.userExceptions.InvalidBirthDateException;
+import ru.yandex.practicum.filmorate.exceptions.userExceptions.InvalidEmailException;
+import ru.yandex.practicum.filmorate.exceptions.userExceptions.InvalidLoginException;
+import ru.yandex.practicum.filmorate.exceptions.userExceptions.UserAlreadyExistException;
+import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
-import javax.validation.ValidationException;
+import javax.validation.ConstraintViolationException;
 
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice("ru.yandex.practicum.filmorate.controller")
 public class ErrorHandler {
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(final DataNotFoundException e) {
-        log.info("404 {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(final ValidationException e) {
-        log.info("400 {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleIdValidationException(final IdValidationException e) {
-        log.info("400 {}", e.getMessage());
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleDataAlreadyExistException(final DataAlreadyExistException e) {
-        log.info("400 {}", e.getMessage());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleSystemExceptions(final IllegalArgumentException e) {
+        log.debug("Упс. Кажется, возникла ошибка {},", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(final Throwable e) {
-        log.info("400 {}", e.getMessage());
+    public ErrorResponse handleSystemExceptions(final NullPointerException e) {
+        log.debug("Упс. Кажется, возникла ошибка {},", e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleSystemExceptions(final Throwable e) {
+        log.debug("Упс. Кажется, возникла ошибка {},", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 
+    @ExceptionHandler
+    public ResponseEntity< String > exc(ConstraintViolationException ex){
+        log.debug("Упс. Кажется, возникла ошибка {},", ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({InvalidNameException.class, LongDescriptionException.class, NegativeDurationException.class,
+            ReleaseDateException.class, InvalidBirthDateException.class, InvalidEmailException.class,
+            InvalidLoginException.class, UserAlreadyExistException.class,
+            LikeOrDislikeReviewException.class, BadSearchQueryException.class,
+            MethodArgumentNotValidException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleValidateParameterException(final RuntimeException e) {
+        log.debug("Упс. Кажется, возникла ошибка {},", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler({LikesException.class, InvalidIdException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleSystemExceptions(final RuntimeException e) {
+        log.debug("Упс. Кажется, возникла ошибка {},", e.getMessage());
+        return new ErrorResponse(e.getMessage());
+    }
 }

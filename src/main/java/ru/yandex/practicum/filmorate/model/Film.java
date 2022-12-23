@@ -1,72 +1,70 @@
 package ru.yandex.practicum.filmorate.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
-import ru.yandex.practicum.filmorate.validator.ReleaseDate;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+@Slf4j
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class Film extends StorageData {
-
-    @NotBlank(message = "Необходимо указать название")
+public class Film {
+    private int id;
+    @NotBlank(message = "Нужно заполнить название фильма.")
     private String name;
-
-    @Size(max = 200, message = "Максимальная длина описания - 200 символов")
+    @Size(min = 1, max = 200)
     private String description;
-
-    @ReleaseDate(message = "Некорректная дата релиза")
+    @NotNull
     private LocalDate releaseDate;
-
-    @Positive(message = "Продолжительность фильма должна быть положительной")
-    private int duration;
-
-    private Long rate = 0L;
-
+    @Min(1)
+    private long duration;
     @NotNull
     private Mpa mpa;
 
-    @JsonIgnore
-    private final Set<User> userIds = new HashSet<>();
+    private Set<Genre> genres = new TreeSet<>(Comparator.comparingLong(Genre::getId));
 
-    private final Set<Genre> genres = new TreeSet<>(Comparator.comparing(Genre::getId));
+    private Set<Director> directors = new TreeSet<>(Comparator.comparingLong(Director::getId));
 
-    public Film(Long id, String name, String description, LocalDate releaseDate, int duration,
-                long rate, Mpa mpa) {
+    /* private Set<Integer> likes = new TreeSet<>();*/
+    private int rating;
+
+    public Film(int id, String name, String description, LocalDate releaseDate, long duration, Mpa mpa) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.rate = rate;
         this.mpa = mpa;
     }
 
-    public void addLike(User user) {
-        userIds.add(user);
-        rate++;
+    public void addDirectorToFilm(Director director) {
+        log.info("Метод addDirectorToFilm в фильме запущен {}", director);
+        directors.add(director);
+        log.info("Режиссеры добавлены в фильм {}", director);
     }
 
-    public void removeLike(User user) {
-        userIds.remove(user);
-        rate--;
-    }
-
-    public void addGenre(Genre genre) {
+    public void addGenresToFilm(Genre genre) {
+        log.info("Метод addDirectorToFilm в фильме запущен {}", genre);
         genres.add(genre);
+        log.info("Режиссеры добавлены в фильм {}", genre);
     }
 
-    public void removeGenre(Genre genre) {
-       genres.remove(genre);
+    public int getYear() {
+        return releaseDate.getYear();
     }
+
+    public void clearGenres() {
+        genres.clear();
+    }
+
+    public void clearDirectors() {
+        directors.clear();
+    }
+
 }

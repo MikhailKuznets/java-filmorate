@@ -2,104 +2,102 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DataNotFoundException;
+import ru.yandex.practicum.filmorate.exceptions.InvalidIdException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.FriendStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.friend.FriendStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import javax.validation.ValidationException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
+import static org.junit.platform.commons.util.StringUtils.isBlank;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class UserService {
-
-    @Qualifier("UserDbStorage")
     private final UserStorage userStorage;
+    private final FeedStorage feedStorage;
+
     private final FriendStorage friendStorage;
 
-
-    protected void validate(User user) {
-        if (user.getLogin() == null || user.getLogin().isBlank() ||
-                user.getLogin().isEmpty() || user.getLogin().contains(" ")) {
-            throw new ValidationException("User login invalid");
-        }
-        if (user.getEmail() == null || user.getEmail().isEmpty() ||
-                user.getEmail().isBlank() || !user.getEmail().contains("@")) {
-            throw new ValidationException("User Email invalid");
-        }
-        if (user.getName() == null || user.getName().isEmpty()
-                || user.getName().isBlank()) {
-            user.setName(user.getLogin());
-        }
-        if (user.getBirthday() != null && user.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("User Birthday invalid");
-        }
-    }
-
-
-    public void addFriend(Long userId, Long friendId) {
-        final User user = userStorage.get(userId);
-        final User friend = userStorage.get(friendId);
-        user.addFriend(friendId);
-        friend.addFriend(userId);
-        friendStorage.addFriend(user.getId(), friend.getId());
-    }
-
-    public void removeFriend(Long userId, Long friendId) {
-        final User user = userStorage.get(userId);
-        final User friend = userStorage.get(friendId);
-        user.removeFriend(friendId);
-        friend.removeFriend(userId);
-        friendStorage.removeFriend(user.getId(), friend.getId());
-    }
-
-    public List<User> getFriends(Long userId) {
-        final User user = userStorage.get(userId);
-        return friendStorage.getFriends(user.getId());
-    }
-
-    public List<User> getCommonFriends(Long id, Long otherId) {
-        List<User> result = new ArrayList<>(userStorage.getCommonFriends(id, otherId));
-        if(result.get(0).getId() == id || result.get(1).getId() == id) {
-            if (result.get(1).getId() == otherId || result.get(0).getId() == otherId) {
-                log.debug("Список общих друзей пользователей id = {} и id = {}", id, otherId);
-                return result.stream().skip(2).collect(Collectors.toList());
+    public void addToFriends(int userId, int friendId) {
+        Optional<User> optionalUser = userStorage.findUserById(userId);
+        Optional<User> optionalFriend = userStorage.findUserById(friendId);
+        if (optionalUser.isPresent()
+                && optionalFriend.isPresent()) {
+            if (!friendStorage.checkFriendshipExists(userId, friendId)) {
+                friendStorage.addToFriend(userId, friendId);
+                log.warn("Пользователь {} и {} стали друзьями", userId, friendId);
+                feedStorage.createFeed (userId, friendId, Feed.Event.FRIEND,Feed.Operation.ADD);
+                log.warn("Добавлена информация в ленту: пользователь {} и {} стали друзьями", userId, friendId);
             } else {
-                throw new DataNotFoundException("Отсутствует пользователь с id = " + otherId);
+                log.warn("Пользователь {} и {} уже друзья", userId, friendId);
+                throw new InvalidIdException("Пользователи уже являются друзьями, попробуйте другой id.");
             }
         } else {
-            throw new DataNotFoundException("Отсутствует пользователь с id = " + id);
+            log.warn("Неверно введен id {} или {}.", userId, friendId);
+            throw new InvalidIdException("Неверно введен id пользователя или друга.");
         }
     }
 
-    public User create(User user) {
-        validate(user);
-        return userStorage.create(user);
-    }
-
-    public User update(User user) {
-        validate(user);
-        if (userStorage.update(user) == 1) {
-            log.debug("Обновление данных пользователя с ID = {}", user.getId());
-            return user;
+    public void removeFromFriends(int userId, int friendId) {
+        Optional<User> optionalUser = userStorage.findUserById(userId);
+        Optional<User> optionalFriend = userStorage.findUserById(friendId);
+        if (optionalUser.isPresent()
+                && optionalFriend.isPresent()) {
+            if (friendStorage.checkFriendshipExists(userId, friendId)) {
+                friendStorage.removeFromFriends(userId, friendId);
+                log.warn("Пользователь {} и {} перестали быть друзьями", userId, friendId);
+                feedStorage.createFeed (userId, friendId,Feed.Event.FRIEND,Feed.Operation.REMOVE);
+                log.warn("Добавлена информация в ленту: пользователь {} и {} перестали быть друзьями", userId, friendId);
+            } else {
+                log.warn("Пользователь {} и {} не друзья ", userId, friendId);
+                throw new InvalidIdException("Пользователи не являются друзьями, попробуйте другой id.");
+            }
         } else {
-            throw new DataNotFoundException("Отсутствует пользователь с ID = " + user.getId());
+            log.warn("Неверно введен id {} или {}.", userId, friendId);
+            throw new InvalidIdException("Неверно введен id пользователя или друга.");
         }
     }
 
-    public Collection<User> getAll() {
-        return userStorage.getAll();
+    public Collection<User> showCommonFriends(int userId, int friendId) {
+        findUserById(userId)
+                .orElseThrow(() -> new InvalidIdException("Нет пользователя с id " + userId));
+        findUserById(friendId)
+                .orElseThrow(() -> new InvalidIdException("Нет пользователя с id " + friendId));
+        return friendStorage.showCommonFriends(userId, friendId);
     }
 
-    public User get(Long id) {
-        return userStorage.get(id);
+    public Collection<User> showUserFriends(int userId) {
+        return friendStorage.showUserFriendsId(userId);
+    }
+
+    public Collection<User> findAllUsers() {
+        return userStorage.findAllUsers();
+    }
+
+    public Optional<User> findUserById(int userId) {
+        return userStorage.findUserById(userId);
+    }
+
+    public User createUser(User user) {
+        String name = user.getName();
+
+        if (isBlank(name)) {
+            user.setName(user.getLogin());
+        }
+
+        return userStorage.createUser(user);
+    }
+
+    public User updateUser(User user) {
+        return userStorage.updateUser(user);
+    }
+
+    public void deleteUserById(int userId) {
+        userStorage.deleteUserById(userId);
     }
 }
